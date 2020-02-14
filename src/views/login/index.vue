@@ -95,7 +95,7 @@ export default {
   name: "login",
   //放data数据、生命周期、自定义函数
   setup(props, context) {
-    console.log(context);
+    //console.log(context);
     /****************************************************************************************************************************** */
     //验证邮箱
     let validateEmail = (rule, value, callback) => {
@@ -322,8 +322,8 @@ export default {
         password: sha1(ruleForm.password),
         code: ruleForm.verify
       };
-      GetLogin(requestData)
-        .then(response => {
+      //通过store 的 actions 进行异步操作
+      context.root.$store.dispatch('Login/Login', requestData).then(response => {
           let data = response.data;
           context.root.$message({
             message: data.message,
@@ -336,6 +336,20 @@ export default {
         .catch(error => {
           console.log(error);
         });
+      // GetLogin(requestData)
+      //   .then(response => {
+      //     let data = response.data;
+      //     context.root.$message({
+      //       message: data.message,
+      //       type: "success"
+      //     });
+      //     setTimeout(() => {
+      //       context.root.$router.push('/console');
+      //     },2000)    
+      //   })
+      //   .catch(error => {
+      //     console.log(error);
+      //   });
     };
 
     //返回出去********************************************************************************************************

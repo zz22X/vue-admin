@@ -1,7 +1,7 @@
 <template>
   <div class>
     <el-container>
-      <el-aside width="250px">
+      <el-aside :class="[navStatus? 'close':'open']">
         <LayoutNav />
       </el-aside>
       <el-container>
@@ -20,7 +20,7 @@
 import LayoutNav from "./components/nav";
 import LayoutMain from "./components/main";
 import LayoutHeader from "./components/header";
-import { reactive, ref } from "@vue/composition-api";
+import { reactive, ref, computed } from "@vue/composition-api";
 export default {
   name: "",
   components: {
@@ -28,17 +28,11 @@ export default {
     LayoutMain,
     LayoutHeader
   },
-  setup(props) {
-    const handleOpen = (key, keyPath) => {
-      console.log(key, keyPath);
-    };
-    const handleClose = (key, keyPath) => {
-      console.log(key, keyPath);
-    };
-
+  setup(props, { root }) {
+    const navStatus = computed(() => root.$store.state.Layout.isCollapse);
+    //console.log(root.$store.state.Layout.isCollapse);
     return {
-      handleOpen,
-      handleClose
+      navStatus
     };
   }
 };
@@ -53,12 +47,18 @@ export default {
   padding-right: 0;
   box-shadow: 0 3px 16px 0 rgba(0, 0, 0, 0.1);
 }
-
+.close {
+  width: 65px !important;
+}
+.open {
+  width: 250px !important;
+}
 .el-aside {
   background-color: #344a5f;
   color: #333;
-  line-height: 200px;
   height: 100vh;
+  transition: all 0.5s ease 0s;
+  overflow: visible;
 }
 
 .el-main {

@@ -1,10 +1,14 @@
 <template>
   <div class="Nav">
+    <img
+      src="../../../assets/images/logo.png"
+      alt
+      id="logo"
+      :style="{'left':isCollapse? '0px':'70px'}"
+    />
     <el-menu
       default-active="1-4-1"
       class="el-menu-vertical-demo"
-      @open="handleOpen"
-      @close="handleClose"
       :collapse="isCollapse"
       router
       background-color="transparent"
@@ -31,32 +35,44 @@
 </template>
 
 <script>
-import { ref, reactive } from "@vue/composition-api";
+import { ref, reactive, computed } from "@vue/composition-api";
 export default {
   name: "LayoutNav",
   setup(props, { root }) {
-    const isCollapse = ref(false);
+    //computed 监听变化  如果要加花括号需要 return出去
+    const isCollapse = computed(() => root.$store.state.Layout.isCollapse);
     const routers = reactive(root.$router.options.routes);
-    //console.log(routers);
-    const handleOpen = (key, keyPath) => {
-      //console.log(key, keyPath);
-    };
-    const handleClose = (key, keyPath) => {
-      //console.log(key, keyPath);
-    };
 
     return {
       isCollapse,
-      routers,
-      handleOpen,
-      handleClose
+      routers
     };
   }
 };
 </script>
 
-<style scoped>
-.el-submenu {
-  font-size: 14px;
+<style>
+.el-menu {
+  border-right: 0;
+}
+#logo {
+  position: relative;
+  width: 95px;
+  height: 95px;
+  vertical-align: middle;
+  margin: 18px 0;
+  transition: all 0.5s ease 0s;
+}
+.is-opened .el-submenu__title {
+  background-color: #f56c6c !important;
+}
+.is-opened .is-active {
+  background-color: rgba(245, 108, 108, 0.2) !important;
+}
+.el-menu--popup {
+  background-color: rgba(52, 74, 95, 0.9) !important;
+}
+.el-menu--popup-right-start {
+  background-color: rgba(52, 74, 95, 0.9) !important;
 }
 </style>

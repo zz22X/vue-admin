@@ -1,25 +1,30 @@
 <template>
   <div class="header">
-    <div class="operation_icon">
-      <svg-icon iconClass="menu" className="menu" />
+    <div class="operation_icon" @click="navCollapse">
+      <svg-icon iconClass="menu" class="menu" />
     </div>
     <div class="right_nav">
       <div class="admin">
-        <div class="headimg"></div>
-        管理员
+        <div class="headimg"></div>管理员
       </div>
       <div class="switch_icon">
-        <svg-icon iconClass="logout" className="logout" />
+        <svg-icon iconClass="logout" class="logout" />
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { ref } from "@vue/composition-api";
 export default {
   name: "LayoutHeader",
-  data() {
-    return {};
+  setup(props, { root }) {
+    const navCollapse = () => {
+      root.$store.commit("Layout/isCollapse");
+    };
+    return {
+      navCollapse
+    };
   }
 };
 </script>
@@ -31,8 +36,11 @@ export default {
 }
 .menu,
 .logout {
-  font-size: 23px!important;
-  vertical-align: middle
+  font-size: 25px !important;
+  vertical-align: middle;
+}
+.logout {
+  margin: 0 !important;
 }
 .switch_icon {
   width: 75px;
