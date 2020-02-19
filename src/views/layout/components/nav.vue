@@ -23,13 +23,13 @@
             <span slot="title">{{ item.meta.name }}</span>
           </template>
           <!-- 子级菜单-->
-          <el-menu-item
-            v-for="subitem in item.children"
-            :key="subitem.id"
-            :index="subitem.path"
-          >
-            {{ subitem.meta.name }}
-          </el-menu-item>
+          <template v-for="subitem in item.children">
+            <el-menu-item
+              :key="subitem.id"
+              :index="subitem.path"
+              v-if="!subitem.hidden"
+            >{{ subitem.meta.name }}</el-menu-item>
+          </template>
         </el-submenu>
       </template>
     </el-menu>

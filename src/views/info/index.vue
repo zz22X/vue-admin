@@ -77,7 +77,7 @@
       <el-table-column label="操作" width="250">
         <template slot-scope="scope">
           <el-button size="mini" type="success" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-          <el-button size="mini" type="success" @click="handleEdit(scope.$index, scope.row)">编辑详情</el-button>
+          <el-button size="mini" type="success" @click="handleEditDetail(scope.$index, scope.row)">编辑详情</el-button>
           <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
         </template>
       </el-table-column>
@@ -329,6 +329,17 @@ export default {
           });
       }, 500);
     };
+    //编辑详情
+    const handleEditDetail = (index, row) => {
+      root.$store.commit("Info/InfoDetail",row)
+      root.$router.push({
+        name: "InfoDetail",
+        params: {
+          id: row.id,
+          row: row
+        }
+      })
+    }
     return {
       //ref
       loading,
@@ -350,6 +361,7 @@ export default {
       handleSelectionChange,
       handleCurrentChange,
       handleSizeChange,
+      handleEditDetail,
       handleEdit,
       handleDelete,
       deleteALL,
