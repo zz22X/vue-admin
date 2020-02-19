@@ -4,7 +4,7 @@
       src="../../../assets/images/logo.png"
       alt
       id="logo"
-      :style="{'left':isCollapse? '0px':'70px'}"
+      :style="{ left: isCollapse ? '0px' : '70px' }"
     />
     <el-menu
       default-active="1-4-1"
@@ -16,18 +16,20 @@
       active-text-color="#fff"
     >
       <template v-for="(item, index) in routers">
-        <el-submenu :index="index + '' " :key="item.id" v-if="!item.hidden">
+        <el-submenu :index="index + ''" :key="item.id" v-if="!item.hidden">
           <!-- 一级菜单-->
           <template slot="title">
             <svg-icon :iconClass="item.meta.icon" :className="item.meta.icon" />
-            <span slot="title">{{item.meta.name}}</span>
+            <span slot="title">{{ item.meta.name }}</span>
           </template>
           <!-- 子级菜单-->
           <el-menu-item
             v-for="subitem in item.children"
             :key="subitem.id"
             :index="subitem.path"
-          >{{ subitem.meta.name }}</el-menu-item>
+          >
+            {{ subitem.meta.name }}
+          </el-menu-item>
         </el-submenu>
       </template>
     </el-menu>
@@ -35,7 +37,7 @@
 </template>
 
 <script>
-import { ref, reactive, computed } from "@vue/composition-api";
+import { reactive, computed } from "@vue/composition-api";
 export default {
   name: "LayoutNav",
   setup(props, { root }) {

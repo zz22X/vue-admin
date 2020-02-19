@@ -2,7 +2,7 @@ import axios from "axios"
 import {
   Message
 } from 'element-ui';
-
+import { getToken, getUsername } from "@/utils/app"
 //创建axios实例 
 
 const BASEURL = process.env.NODE_ENV === 'production' ? '' : '/devApi' //在开发环境（development）下使用
@@ -24,14 +24,8 @@ service.interceptors.request.use(function (config) {
   // 在发送请求之前做些什么
   // 请求头
   // token userid。。后端需要什么 业务需求
-
-
-
-
-
-
-
-  console.log(config)
+  config.headers['Tokey'] = getToken();
+  config.headers['UserName'] = getUsername()
   return config;
 }, function (error) {
   // 对请求错误做些什么

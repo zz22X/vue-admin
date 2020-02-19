@@ -5,7 +5,8 @@
     </div>
     <div class="right_nav">
       <div class="admin">
-        <div class="headimg"></div>管理员
+        <div class="headimg"></div>
+        {{username}}
       </div>
       <div class="switch_icon">
         <svg-icon iconClass="logout" class="logout" />
@@ -15,15 +16,17 @@
 </template>
 
 <script>
-import { ref } from "@vue/composition-api";
+import { ref, computed } from "@vue/composition-api";
 export default {
   name: "LayoutHeader",
   setup(props, { root }) {
+    const username = computed(() => root.$store.state.Login.username)
     const navCollapse = () => {
       root.$store.commit("Layout/isCollapse");
     };
     return {
-      navCollapse
+      navCollapse,
+      username
     };
   }
 };

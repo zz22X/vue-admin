@@ -3,8 +3,7 @@ import VueRouter from "vue-router";
 Vue.use(VueRouter);
 //引入组件布局
 import Layout from "@/views/layout/index.vue"
-const routes = [
-  {
+const routes = [{
     path: "/",
     redirect: "/login",
     hidden: true,
@@ -17,7 +16,8 @@ const routes = [
     name: "Login",
     hidden: true,
     meta: {
-      name: "登录"
+      name: "登录",
+      requireAuth: true,
     },
     component: () => import("../views/login/index.vue")
   },
@@ -28,20 +28,18 @@ const routes = [
     redirect: "index",
     meta: {
       name: "控制台",
-      icon: "control"
+      icon: "control",
     },
     component: Layout,
-    children: [
-      {
-        path: "/index",
-        name: "Index",
-        hidden: false,
-        meta: {
-          name: "首页"
-        },
-        component: () => import("../views/console/index.vue")
-      }
-    ]
+    children: [{
+      path: "/index",
+      name: "Index",
+      hidden: false,
+      meta: {
+        name: "首页"
+      },
+      component: () => import("../views/console/index.vue")
+    }]
   },
   {
     path: "/info",
@@ -52,8 +50,7 @@ const routes = [
       icon: "info"
     },
     component: Layout,
-    children: [
-      {
+    children: [{
         path: "/infoList",
         name: "InfoList",
         hidden: false,
@@ -82,17 +79,15 @@ const routes = [
       icon: "user"
     },
     component: Layout,
-    children: [
-      {
-        path: "/userList",
-        name: "UserList",
-        hidden: false,
-        meta: {
-          name: "用户列表"
-        },
-        component: () => import("../views/user/index.vue")
-      }
-    ]
+    children: [{
+      path: "/userList",
+      name: "UserList",
+      hidden: false,
+      meta: {
+        name: "用户列表"
+      },
+      component: () => import("../views/user/index.vue")
+    }]
   }
 ];
 

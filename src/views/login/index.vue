@@ -4,11 +4,13 @@
       <div class="menu_tab">
         <ul>
           <li
-            :class="{'current': item.current}"
+            :class="{ current: item.current }"
             v-for="item in menutab"
             :key="item.txt"
             @click="toggleMenu(item)"
-          >{{item.txt}}</li>
+          >
+            {{ item.txt }}
+          </li>
         </ul>
       </div>
       <div class="tab_cnt">
@@ -23,7 +25,12 @@
           >
             <el-form-item prop="emil">
               <label for="email">邮箱</label>
-              <el-input id="email" type="text" v-model="ruleForm.emil" autocomplete="off"></el-input>
+              <el-input
+                id="email"
+                type="text"
+                v-model="ruleForm.emil"
+                autocomplete="off"
+              ></el-input>
             </el-form-item>
             <el-form-item prop="password">
               <label for="password">密码</label>
@@ -63,7 +70,8 @@
                     type="success"
                     @click="getSms()"
                     :disabled="verifyButtonStatus.status"
-                  >{{ verifyButtonStatus.text }}</el-button>
+                    >{{ verifyButtonStatus.text }}</el-button
+                  >
                 </el-col>
               </el-row>
             </el-form-item>
@@ -71,8 +79,9 @@
               <el-button
                 type="danger"
                 @click="submitForm('ruleForm')"
-                :disabled=" buttonStatus "
-              >{{ model === 'login'? '登录' : '注册' }}</el-button>
+                :disabled="buttonStatus"
+                >{{ model === "login" ? "登录" : "注册" }}</el-button
+              >
             </el-form-item>
           </el-form>
         </div>
@@ -84,7 +93,7 @@
 <script>
 import sha1 from "js-sha1";
 import { reactive, ref, onMounted } from "@vue/composition-api";
-import { GetSms, GetRegister, GetLogin } from "@/api/login";
+import { GetSms, GetRegister } from "@/api/login";
 import {
   stripscript,
   validateEmil,
@@ -216,7 +225,7 @@ export default {
     };
     /****************************************************************************************************************************** */
     //提交表单
-    const submitForm = formName => {
+    const submitForm = () => {
       //2.0 this.$refs
       context.refs.ruleForm.validate(valid => {
         if (valid) {
@@ -323,15 +332,17 @@ export default {
         code: ruleForm.verify
       };
       //通过store 的 actions 进行异步操作
-      context.root.$store.dispatch('Login/Login', requestData).then(response => {
+      context.root.$store
+        .dispatch("Login/Login", requestData)
+        .then(response => {
           let data = response.data;
           context.root.$message({
             message: data.message,
             type: "success"
           });
           setTimeout(() => {
-            context.root.$router.push('/console');
-          },2000)    
+            context.root.$router.push("/console");
+          }, 2000);
         })
         .catch(error => {
           console.log(error);
@@ -345,7 +356,7 @@ export default {
       //     });
       //     setTimeout(() => {
       //       context.root.$router.push('/console');
-      //     },2000)    
+      //     },2000)
       //   })
       //   .catch(error => {
       //     console.log(error);

@@ -1,6 +1,6 @@
 <template>
   <div class="">
-  
+
   </div>
 
 </template>
@@ -18,5 +18,4 @@ export default {
 
 <style scoped>
 
-</style>
 </style>

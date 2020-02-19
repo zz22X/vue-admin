@@ -1,7 +1,7 @@
 <template>
   <div class>
     <el-container>
-      <el-aside :class="[navStatus? 'close':'open']">
+      <el-aside :class="[navStatus ? 'close' : 'open']">
         <LayoutNav />
       </el-aside>
       <el-container>
@@ -20,7 +20,7 @@
 import LayoutNav from "./components/nav";
 import LayoutMain from "./components/main";
 import LayoutHeader from "./components/header";
-import { reactive, ref, computed } from "@vue/composition-api";
+import { computed } from "@vue/composition-api";
 export default {
   name: "",
   components: {

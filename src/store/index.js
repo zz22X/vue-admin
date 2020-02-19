@@ -2,6 +2,7 @@ import Vue from "vue";
 import Vuex from "vuex";
 import navCollapse from "./module/layout/index"
 import Login from "./module/login/index"
+import Common from "./module/common/index"
 Vue.use(Vuex);
 
 
@@ -11,6 +12,7 @@ export default new Vuex.Store({
   actions: {},
   modules: {
     Layout: navCollapse,
-    Login
+    Login,
+    Common
   }
 });

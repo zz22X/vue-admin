@@ -41,7 +41,7 @@ export default {
   width: 1em;
   height: 1em;
   font-size: 20px;
-  margin-right: 10px;
+  margin-right: 15px;
   fill: currentColor;
 }
 </style>
