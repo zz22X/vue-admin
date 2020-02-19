@@ -6,9 +6,9 @@ import {
   reactive
 } from "@vue/composition-api"
 export function common() {
-  // const TypeKey = reactive({
-  //   data: []
-  // });
+  const TypeKey = reactive({
+    data: []
+  });
   const TypeAllKey = reactive({
     data: []
   });
@@ -18,14 +18,14 @@ export function common() {
   /**
    * 获取分类
    */
-  // const getCateType = () => {
-  //   getCategory().then(response => {
-  //     TypeKey.data = response.data.data.data
-  //     //console.log(TypeKey.data)
-  //   }).catch(error => {
+  const getCateType = () => {
+    getCategory().then(response => {
+      TypeKey.data = response.data.data.data
+      //console.log(TypeKey.data)
+    }).catch(error => {
 
-  //   })
-  // }
+    })
+  }
   const getCateTypeAll = () => {
     getCategoryall().then(response => {
       TypeAllKey.data = response.data.data
@@ -34,6 +34,8 @@ export function common() {
     })
   }
   return {
+    TypeKey,
+    getCateType,
     getCateTypeAll,
     TypeAllKey
   }

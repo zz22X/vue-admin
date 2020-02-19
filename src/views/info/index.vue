@@ -54,7 +54,12 @@
       </el-row>
     </el-form>
     <!--新增模块 -->
-    <addDialog :flag.sync="AddNewVisible" :sendCateType="type_key.data" :sign="sendsign" @GetList="GetInfoList" />
+    <addDialog
+      :flag.sync="AddNewVisible"
+      :sendCateType="type_key.data"
+      :sign="sendsign"
+      @GetList="GetInfoList"
+    />
     <!--表格内容 -->
     <el-table
       :data="tableData.data"
@@ -66,12 +71,13 @@
     >
       <el-table-column type="selection" ref="select"></el-table-column>
       <el-table-column prop="title" label="标题"></el-table-column>
-      <el-table-column prop="categoryId" label="类型" width="130" :formatter="toType"></el-table-column>
-      <el-table-column prop="createDate" label="日期" width="200" :formatter="toDate"></el-table-column>
+      <el-table-column prop="categoryId" label="类型" width="110" :formatter="toType"></el-table-column>
+      <el-table-column prop="createDate" label="日期" width="180" :formatter="toDate"></el-table-column>
       <el-table-column prop="manger" label="管理人" width="130"></el-table-column>
-      <el-table-column label="操作" width="200">
+      <el-table-column label="操作" width="250">
         <template slot-scope="scope">
           <el-button size="mini" type="success" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+          <el-button size="mini" type="success" @click="handleEdit(scope.$index, scope.row)">编辑详情</el-button>
           <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
         </template>
       </el-table-column>
