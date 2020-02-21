@@ -29,6 +29,7 @@ export function common() {
   const getCateTypeAll = () => {
     getCategoryall().then(response => {
       TypeAllKey.data = response.data.data
+      //console.log(TypeAllKey.data)
     }).catch(error => {
 
     })

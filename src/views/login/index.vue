@@ -8,9 +8,7 @@
             v-for="item in menutab"
             :key="item.txt"
             @click="toggleMenu(item)"
-          >
-            {{ item.txt }}
-          </li>
+          >{{ item.txt }}</li>
         </ul>
       </div>
       <div class="tab_cnt">
@@ -25,12 +23,7 @@
           >
             <el-form-item prop="emil">
               <label for="email">邮箱</label>
-              <el-input
-                id="email"
-                type="text"
-                v-model="ruleForm.emil"
-                autocomplete="off"
-              ></el-input>
+              <el-input id="email" type="text" v-model="ruleForm.emil" autocomplete="off"></el-input>
             </el-form-item>
             <el-form-item prop="password">
               <label for="password">密码</label>
@@ -58,20 +51,14 @@
               <label for="verify">验证码</label>
               <el-row :gutter="10">
                 <el-col :span="15">
-                  <el-input
-                    v-model="ruleForm.verify"
-                    maxlength="6"
-                    minlength="6"
-                    id="verify"
-                  ></el-input>
+                  <el-input v-model="ruleForm.verify" maxlength="6" minlength="6" id="verify"></el-input>
                 </el-col>
                 <el-col :span="9">
                   <el-button
                     type="success"
                     @click="getSms()"
                     :disabled="verifyButtonStatus.status"
-                    >{{ verifyButtonStatus.text }}</el-button
-                  >
+                  >{{ verifyButtonStatus.text }}</el-button>
                 </el-col>
               </el-row>
             </el-form-item>
@@ -80,8 +67,7 @@
                 type="danger"
                 @click="submitForm('ruleForm')"
                 :disabled="buttonStatus"
-                >{{ model === "login" ? "登录" : "注册" }}</el-button
-              >
+              >{{ model === "login" ? "登录" : "注册" }}</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -343,6 +329,9 @@ export default {
           setTimeout(() => {
             context.root.$router.push("/console");
           }, 2000);
+          if (timer.value) {
+            clearInterval(timer.value);
+          }
         })
         .catch(error => {
           console.log(error);

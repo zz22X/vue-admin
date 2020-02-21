@@ -1,5 +1,5 @@
 <template>
-  <div class="Nav">
+  <div class="Nav" style="position: sticky; top: 0;">
     <img
       src="../../../assets/images/logo.png"
       alt

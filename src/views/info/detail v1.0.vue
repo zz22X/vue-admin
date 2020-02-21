@@ -19,15 +19,57 @@
         <el-input v-model="data.ruleForm.title"></el-input>
       </el-form-item>
       <el-form-item label="缩略图" prop="pics" id="suoluepic">
-        <uploadImg :fileurl.sync="data.fileurl" />
+        <div class="demo-image__preview">
+          <img
+            style="width: 148px; height: 148px; cursor: pointer;"
+            :src="data.fileurl"
+            v-show="data.fileurl"
+          />
+        </div>
+        <el-upload
+          action
+          list-type="picture-card"
+          :auto-upload="false"
+          :file-list="data.fileList"
+          :on-change="handlePictureChange"
+        >
+          <i slot="default" class="el-icon-plus"></i>
+          <div slot="file" slot-scope="{file}">
+            <img class="el-upload-list__item-thumbnail" :src="file.url" alt />
+            <span class="el-upload-list__item-actions">
+              <span class="el-upload-list__item-preview" @click="handlePictureCardPreview(file)">
+                <i class="el-icon-zoom-in"></i>
+              </span>
+              <span
+                v-if="!data.ruleForm.disabled"
+                class="el-upload-list__item-delete"
+                @click="handleDownload(file)"
+              >
+                <i class="el-icon-download"></i>
+              </span>
+              <span
+                v-if="!data.ruleForm.disabled"
+                class="el-upload-list__item-delete"
+                @click="handleRemove(file)"
+              >
+                <i class="el-icon-delete"></i>
+              </span>
+            </span>
+          </div>
+        </el-upload>
+        <el-dialog :visible.sync="data.ruleForm.dialogVisible">
+          <img width="100%" :src="data.ruleForm.dialogImageUrl" alt />
+        </el-dialog>
       </el-form-item>
-      <el-form-item prop="date" style="width: 22%;" label="发布日期">
-        <el-input
-          placeholder="选择日期时间"
-          v-model="data.ruleForm.date"
-          :disabled="true"
-          prefix-icon="el-icon-date"
-        ></el-input>
+      <el-form-item label="发布日期">
+        <el-form-item prop="date" style="width: 15%;">
+          <el-input
+            placeholder="选择日期时间"
+            v-model="data.ruleForm.date"
+            :disabled="true"
+            prefix-icon="el-icon-date"
+          ></el-input>
+        </el-form-item>
       </el-form-item>
       <el-form-item label="详细内容" prop="content" style="width: 95%;height: 220px;">
         <quill-editor
@@ -50,18 +92,13 @@
 </template>
 
 <script>
+import axios from "axios";
 import { common } from "@/api/common";
 import { formatDate } from "@/utils/common";
-import { editInfoList, getInfoList } from "@/api/info";
-//组件
-import uploadImg from "@c/uploadimg/index";
-//3.0
+import { editInfoList } from "@/api/info";
 import { reactive, onMounted, ref, watch } from "@vue/composition-api";
 export default {
   name: "",
-  components: {
-    uploadImg
-  },
   setup(props, { root, refs }) {
     const { getCateTypeAll, TypeAllKey } = common();
     const data = reactive({
@@ -74,7 +111,10 @@ export default {
         title: "",
         pics: "",
         date: "",
-        content: ""
+        content: "",
+        dialogImageUrl: "",
+        dialogVisible: false,
+        disabled: false
       },
       options: [],
       rules: {
@@ -92,48 +132,72 @@ export default {
       },
       file: "",
       fileurl: "",
+      srcUrl: [],
+      fileList: [],
       editorOption: { theme: "snow" }
     });
 
     onMounted(() => {
-      getInfo()
       getCateTypeAll();
-      //defaultData();
+      defaultData();
     });
 
     watch(() => {
       data.options = TypeAllKey.data;
     });
-
-    //获取页面内容getInfoList
-    const getInfo = () => {
-      let reqData = {
-        id: data.id,
-        pageNumber: 1,
-        pageSize: 1
-      };
-      getInfoList(reqData)
-        .then(res => {
-          let resData = res.data.data.data;
-          console.log(resData);
-          data.ruleForm.title = resData[0].title;
-          data.ruleForm.content = resData[0].content;
-          data.ruleForm.date = formatDate(resData[0].createDate);
-          data.ruleForm.category = resData[0].categoryId;
-          data.fileurl = resData[0].imgUrl;
-        })
-        .catch(err => {});
-    };
-
     //进入页面显示的内容
-    // const defaultData = () => {
-    //   data.ruleForm.title = data.row.title;
-    //   data.ruleForm.content = data.row.content;
-    //   data.ruleForm.date = formatDate(data.row.createDate);
-    //   data.ruleForm.category = data.row.categoryId;
-    //   data.fileurl = data.row.imgUrl;
-    // };
-
+    const defaultData = () => {
+      data.ruleForm.title = data.row.title;
+      data.ruleForm.content = data.row.content;
+      data.ruleForm.date = formatDate(data.row.createDate);
+      data.ruleForm.category = data.row.categoryId;
+      data.fileurl = data.row.imgUrl;
+      data.srcUrl.push(data.row.imgUrl);
+    };
+    //缩略图相关
+    const handleRemove = file => {
+      let fileuid = file.uid;
+      let index = data.fileList.filter(item => item.uid !== fileuid);
+      data.fileList = index;
+    };
+    const handlePictureCardPreview = file => {
+      data.ruleForm.dialogImageUrl = file.url;
+      data.ruleForm.dialogVisible = true;
+    };
+    const handleDownload = file => {
+      data.file = file.raw;
+      const param = new FormData();
+      param.append("file", data.file, data.id);
+      axios
+        .post("http://localhost:3000/api2/users/uploadUserHead", param, {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        })
+        .then(res => {
+          if (res.data.status === 0) {
+            root.$message({
+              message: "图片上传成功",
+              type: "success"
+            });
+            data.ruleForm.dialogImageUrl = res.data.data.userHead;
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    };
+    const handlePictureChange = (file, fileList) => {
+      data.fileList = fileList;
+      let filename = file.name;
+      let regex = /(.jpg|.jpeg|.gif|.png|.bmp)$/;
+      if (!regex.test(filename.toLowerCase())) {
+        root.$message({
+          message: "图片格式不符",
+          type: "warning"
+        });
+      }
+    };
     //保存修改
     const submitForm = ruleForm => {
       refs.ruleForm.validate(valid => {
@@ -155,7 +219,7 @@ export default {
         categoryId: data.ruleForm.category,
         title: data.ruleForm.title,
         content: data.ruleForm.content,
-        imgUrl: data.fileurl
+        imgUrl: data.ruleForm.dialogImageUrl
       };
       editInfoList(reqData)
         .then(res => {
@@ -168,6 +232,7 @@ export default {
           }
           console.log(res);
           data.confirmloading = false;
+          refs.ruleForm.resetFields();
         })
         .catch(err => {
           root.$message({
@@ -179,7 +244,11 @@ export default {
     };
     return {
       data,
-      submitForm
+      submitForm,
+      handleRemove,
+      handlePictureCardPreview,
+      handleDownload,
+      handlePictureChange
     };
   }
 };

@@ -1,11 +1,11 @@
 <template>
   <div class>
-    <el-container>
+    <el-container style="background-color: #344a5f;">
       <el-aside :class="[navStatus ? 'close' : 'open']">
         <LayoutNav />
       </el-aside>
       <el-container>
-        <el-header style="height: 75px">
+        <el-header style="height: 75px;position: sticky;top: 0;z-index: 999;">
           <LayoutHeader />
         </el-header>
         <el-main>
@@ -58,7 +58,7 @@ export default {
   color: #333;
   height: 100vh;
   transition: all 0.5s ease 0s;
-  overflow: visible;
+  overflow: visible; 
 }
 
 .el-main {
