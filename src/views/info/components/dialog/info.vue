@@ -10,14 +10,7 @@
     >
       <el-form :model="data.form" ref="dataForm">
         <el-form-item label="类型" class="add_type" prop="category">
-          <el-select v-model="data.form.category" placeholder="请选择" class="type">
-            <el-option
-              v-for="item in data.type_key"
-              :key="item.id"
-              :label="item.category_name"
-              :value="item.id"
-            ></el-option>
-          </el-select>
+          <Cascader :modelCascader="data.cascaderOption" @sendmodelkey="getmodelkey" />
         </el-form-item>
         <el-form-item label="标题" class="add_title" prop="title">
           <el-input
@@ -53,11 +46,15 @@
 </template>
 
 <script>
+import Cascader from "@c/cascader/index";
 import { addInfoList, editInfoList } from "@/api/info";
 import { global } from "@/utils/global";
 import { reactive, watch, ref } from "@vue/composition-api";
 export default {
   name: "addDialog",
+  components: {
+    Cascader
+  },
   props: {
     flag: {
       type: Boolean,
@@ -88,7 +85,10 @@ export default {
         title: "",
         content: ""
       },
-      type_key: []
+      type_key: [],
+      cascaderOption: {
+        init: []
+      }
     });
     //watch监听
     watch(() => {
@@ -101,11 +101,17 @@ export default {
     /* 
         methods
     */
+
+    const getmodelkey = val => {
+      data.form.category = val;
+    };
     //关闭
-    const close = () => {
+    const close = () => {    
+      data.form.title = "";
+      data.form.content = "";
+      data.cascaderOption.init = [];
       data.AddNewVisible = false;
       emit("update:flag", false);
-      refs.dataForm.resetFields();
     };
     //打开时
     const open = () => {
@@ -113,7 +119,8 @@ export default {
         data.form.category = props.sign.data.categoryId;
         data.form.title = props.sign.data.title;
         data.form.content = props.sign.data.content;
-      }
+        data.cascaderOption.init.push(data.form.category);
+      } 
     };
     //打开动画结束后
     const poened = () => {
@@ -226,7 +233,8 @@ export default {
       open,
       poened,
       cancelAddNew,
-      confirmAddNew
+      confirmAddNew,
+      getmodelkey
     };
   }
 };

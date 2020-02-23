@@ -1,11 +1,13 @@
 <template>
-  <div class="Nav" style="position: sticky; top: 0;">
+  <div class="Nav" style="position: sticky; top: 0;z-index: 100;">
+    <div>
     <img
       src="../../../assets/images/logo.png"
       alt
       id="logo"
       :style="{ left: isCollapse ? '0px' : '70px' }"
     />
+    </div>
     <el-menu
       default-active="1-4-1"
       class="el-menu-vertical-demo"
@@ -64,6 +66,7 @@ export default {
   vertical-align: middle;
   margin: 18px 0;
   transition: all 0.5s ease 0s;
+  z-index: 999;
 }
 .is-opened .el-submenu__title {
   background-color: #f56c6c !important;
@@ -77,4 +80,5 @@ export default {
 .el-menu--popup-right-start {
   background-color: rgba(52, 74, 95, 0.9) !important;
 }
+
 </style>

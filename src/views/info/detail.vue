@@ -7,13 +7,8 @@
       label-width="100px"
       class="demo-ruleForm"
     >
-      <el-form-item label="信息分类" prop="category">
-        <el-cascader
-          placeholder="请选择"
-          v-model="data.ruleForm.category"
-          :options="data.options"
-          :props="{ expandTrigger: 'hover',value: 'id', label: 'category_name', children: 'children'} "
-        ></el-cascader>
+      <el-form-item label="信息分类" prop="category" style="width: 18%;">
+        <Cascader :modelCascader="data.cascaderOption" @sendmodelkey="getmodelkey" />
       </el-form-item>
       <el-form-item label="标题" prop="title" style="width: 34%;">
         <el-input v-model="data.ruleForm.title"></el-input>
@@ -55,12 +50,14 @@ import { formatDate } from "@/utils/common";
 import { editInfoList, getInfoList } from "@/api/info";
 //组件
 import uploadImg from "@c/uploadimg/index";
+import Cascader from "@c/cascader/index";
 //3.0
 import { reactive, onMounted, ref, watch } from "@vue/composition-api";
 export default {
   name: "",
   components: {
-    uploadImg
+    uploadImg,
+    Cascader
   },
   setup(props, { root, refs }) {
     const { getCateTypeAll, TypeAllKey } = common();
@@ -75,6 +72,9 @@ export default {
         pics: "",
         date: "",
         content: ""
+      },
+      cascaderOption: {
+        init: [] //init为默认值数组 传一个value init: ["XXX"]
       },
       options: [],
       rules: {
@@ -96,7 +96,7 @@ export default {
     });
 
     onMounted(() => {
-      getInfo()
+      getInfo();
       getCateTypeAll();
       //defaultData();
     });
@@ -115,24 +115,22 @@ export default {
       getInfoList(reqData)
         .then(res => {
           let resData = res.data.data.data;
-          console.log(resData);
           data.ruleForm.title = resData[0].title;
           data.ruleForm.content = resData[0].content;
           data.ruleForm.date = formatDate(resData[0].createDate);
           data.ruleForm.category = resData[0].categoryId;
+          data.cascaderOption.init.push(data.ruleForm.category)
           data.fileurl = resData[0].imgUrl;
         })
         .catch(err => {});
     };
-
+    const getmodelkey = (val) => {
+      data.ruleForm.category = val;
+    };
     //进入页面显示的内容
-    // const defaultData = () => {
-    //   data.ruleForm.title = data.row.title;
-    //   data.ruleForm.content = data.row.content;
-    //   data.ruleForm.date = formatDate(data.row.createDate);
-    //   data.ruleForm.category = data.row.categoryId;
-    //   data.fileurl = data.row.imgUrl;
-    // };
+    const defaultData = () => {
+      data.ruleForm.category = data.row.categoryId;
+    };
 
     //保存修改
     const submitForm = ruleForm => {
@@ -179,7 +177,9 @@ export default {
     };
     return {
       data,
-      submitForm
+      submitForm,
+      getmodelkey,
+      defaultData
     };
   }
 };

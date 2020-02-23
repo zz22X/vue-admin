@@ -41,37 +41,58 @@
     </el-form>
     <!--新增模块 -->
     <addDialog
-      :flag.sync="addDialog.AddNewVisible"
-      :sendCateType="addDialog.type_key"
-      :sign="addDialog.sendsign"
+      :flag.sync="AddNewVisible"
+      :sendCateType="type_key.data"
+      :sign="sendsign"
       @GetList="GetInfoList"
     />
     <!--表格内容 -->
-    <TableCmp
-      :tableData="table.tableData"
-      @selectionchange="selectionchange"
-      :loading="table.loading"
-      @handleedit="handleEdit"
-      @handleeditdetail="handleEditDetail"
-      @handledelete="handleDelete"
-    />
+    <el-table
+      :data="tableData.data"
+      border
+      style="width: 100%"
+      v-loading="loading"
+      ref="TableData"
+      @selection-change="handleSelectionChange"
+    >
+      <el-table-column type="selection" ref="select"></el-table-column>
+      <el-table-column prop="title" label="标题"></el-table-column>
+      <el-table-column prop="categoryId" label="类型" width="110" :formatter="toType"></el-table-column>
+      <el-table-column prop="createDate" label="日期" width="180" :formatter="toDate"></el-table-column>
+      <el-table-column prop="manger" label="管理人" width="130"></el-table-column>
+      <el-table-column label="操作" width="250">
+        <template slot-scope="scope">
+          <el-button size="mini" type="success" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+          <el-button size="mini" type="success" @click="handleEditDetail(scope.$index, scope.row)">编辑详情</el-button>
+          <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
     <!--底部 -->
-    <PaginationCmp
-      :totalPage="pagination.totalpage"
-      :deleteId="table.deleteid"
-      @confirmdelete="confirmDelete"
-      @getpagesize="getpagesize"
-      @getpagenumber="getpagenumber"
-      @Getinfolist="GetInfoList"
-    />
+    <el-row :gutter="0" class="form_bottom" style="margin-top: 30px">
+      <el-col :span="4">
+        <el-button @click="deleteALL(tableData.data)">批量删除</el-button>
+      </el-col>
+      <el-col :span="20">
+        <el-pagination
+          background
+          :page-size="5"
+          :page-sizes="[5, 10]"
+          :current-page="1"
+          :total="totalpage"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          layout="total, sizes, prev, pager, next, jumper"
+          style=" text-align: right"
+        ></el-pagination>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
 <script>
-import TableCmp from "./components/table/index";
-import PaginationCmp from "@c/Pagination/pagination";
 import Select from "@c/select/index";
-import Cascader from "@c/cascader/index";
+import Cascader from "@c/cascader/index"
 import addDialog from "./components/dialog/info";
 import { global } from "@/utils/global";
 import { formatDate } from "@/utils/common";
@@ -83,9 +104,7 @@ export default {
   components: {
     addDialog,
     Cascader,
-    Select,
-    PaginationCmp,
-    TableCmp
+    Select
   },
   setup(props, { root, refs }) {
     //global
@@ -95,31 +114,35 @@ export default {
     //data
     const data = reactive({
       selsctOption: {
-        init: ["id", "title"]
+        init:["id", "title"]
       },
       cascaderOption: {
         init: []
       }
+    })
+    const loading = ref(false);
+    const totalpage = ref(0);
+    const page_size = ref(4);
+    const AddNewVisible = ref(false);
+    const formLabelWidth = ref("45px");
+    const sendsign = reactive({
+      value: "",
+      data: "",
+      show: true
     });
-    const table = reactive({
-      loading: false,
-      tableData: [],
-      deleteid: []
+    const deleteid = reactive({
+      id: ""
     });
-    const pagination = reactive({
+    const page = reactive({
       pageNumber: 1,
-      pageSize: 5,
-      totalpage: 0
+      pageSize: 5
     });
-    const addDialog = reactive({
-      AddNewVisible: false,
-      sendsign: {
-        value: "",
-        data: "",
-        show: true
-      },
-      type_key: []
-    });
+    const categoryid = reactive({
+      val:[]
+    })
+    const infoList = reactive({});
+    const tableData = reactive({ data: [] });
+    const type_key = reactive({ data: [] });
     const form = reactive({
       category: "",
       date: "",
@@ -127,12 +150,14 @@ export default {
       input: "",
       textarea: ""
     });
-
+    const msgChild = reactive({
+      data: []
+    })
     //onMounted
     onMounted(() => {
       //方法1 vue3.0
       getCateType();
-
+      
       //方法2： vuex
       //vuexGetCateType()
       //
@@ -147,18 +172,47 @@ export default {
     /**
      * watch
      */
+    watch(() => {
+
+    })
     watch(
       () => TypeKey.data,
       value => {
-        addDialog.type_key = value;
+        type_key.data = value;
       }
     );
+
+    const getmodelkey = (val) => {
+      form.category = val
+    }
+
+    const getselectvalue = (val) => {
+      form.keyword = val
+    }
     /**
      * methods
      */
+    //新增
+    const AddNewInfo = () => {
+      AddNewVisible.value = true;
+      sendsign.value = "新增";
+      sendsign.data = "";
+    };
+    //表格展示 分类 时间戳
+    const toDate = row => {
+      return formatDate(row.createDate);
+    };
+    const toType = row => {
+      let CateId = row.categoryId;
+      let CateType = type_key.data.filter(item => item.id == CateId);
+      return CateType[0].category_name;
+    };
+    //时间框值改变
     const handleChangeDate = () => {};
     //搜索
     const search = () => {
+      //let reqData = formatData()
+      //console.log(reqData)
       GetInfoList();
     };
     //搜索条件处理
@@ -176,35 +230,23 @@ export default {
       }
       return formatdata;
     };
-    //cascader ok
-    const getmodelkey = val => {
-      form.category = val;
+    //编辑
+    const handleEdit = (index, row) => {
+      //console.log(row);
+      AddNewVisible.value = true;
+      sendsign.value = "编辑";
+      sendsign.data = row;
+      sendsign.show = false;
+      //console.log(sendsign)
     };
-    //select ok
-    const getselectvalue = val => {
-      form.keyword = val;
-    };
-    //addDialog 新增 ok
-    const AddNewInfo = () => {
-      addDialog.AddNewVisible = true;
-      addDialog.sendsign.value = "新增";
-      addDialog.sendsign.data = "";
-    };
-    //addDialog 编辑 ok
-    const handleEdit = val => {
-      addDialog.AddNewVisible = true;
-      addDialog.sendsign.value = "编辑";
-      addDialog.sendsign.data = val;
-      addDialog.sendsign.show = false;
-    };
-    //table 删除 ok
-    const handleDelete = val => {
-      table.deleteid.push(val.id);
+    //删除
+    const handleDelete = (index, row) => {
+      deleteid.id = [row.id];
       MsgBox({
         content: "删除此内容,是否继续?",
         fn: confirmDelete,
         catchFn: () => {
-          table.deleteid = [];
+          deleteid.id = "";
           root.$message({
             message: "已取消删除",
             type: "success"
@@ -212,32 +254,35 @@ export default {
         }
       });
     };
-    //table 编辑详情 ok
-    const handleEditDetail = val => {
-      //root.$store.commit("Info/InfoDetail", val);
-      root.$router.push({
-        name: "InfoDetail",
-        params: {
-          id: val.id,
-          val: val
+    const deleteALL = () => {
+      if (!deleteid.id || deleteid.id.length == 0) {
+        root.$message({
+          message: "请选择要删除的数据",
+          type: "warning"
+        });
+        return false;
+      }
+      MsgBox({
+        content: "删除选定内容,是否继续?",
+        fn: confirmDelete,
+        catchFn: () => {
+          deleteid.id = "";
+          root.$message({
+            message: "已取消删除",
+            type: "success"
+          });
         }
       });
     };
-    //table 选中变化 ok
-    const selectionchange = val => {
-      table.deleteid = val;
+    const handleSelectionChange = selection => {
+      let id = selection.map(item => item.id);
+      console.log(selection)
+      deleteid.id = id;
+      console.log(deleteid.id);
     };
-    //pagination 获取分页信息 ok
-    const getpagenumber = val => {
-      pagination.pageNumber = val;
-    };
-    const getpagesize = val => {
-      pagination.pageSize = val;
-    };
-    //通用 确认删除 ok
     const confirmDelete = () => {
       let data = {
-        id: table.deleteid
+        id: deleteid.id
       };
       deleteInfo(data)
         .then(res => {
@@ -247,86 +292,105 @@ export default {
               type: "success"
             });
             GetInfoList();
+            // let index = tableData.data.findIndex(
+            //   item => item.id == deleteid.id
+            // );
+            // tableData.data.splice(index, 1);
           }
         })
         .catch(err => {
           console.log(err);
         });
     };
-    //通用 获取信息列表 ok
+    //获取信息列表
+    const handleCurrentChange = val => {
+      page.pageNumber = val;
+      GetInfoList();
+    };
+    const handleSizeChange = val => {
+      page.pageSize = val;
+      GetInfoList();
+    };
     const GetInfoList = () => {
       let data = {
         categoryId: form.category,
         startTiem: form.date[0],
         endTime: form.date[1],
         [form.keyword]: form.input,
-        pageNumber: pagination.pageNumber,
-        pageSize: pagination.pageSize
+        pageNumber: page.pageNumber,
+        pageSize: page.pageSize
       };
-      table.loading = true;
+      loading.value = true;
       setTimeout(() => {
         getInfoList(data)
           .then(res => {
             let resData = res.data;
             if (resData.resCode === 0) {
-              pagination.totalpage = resData.data.total;
-              table.tableData = resData.data.data;
-              table.tableData.map(item => {
-                item.createDate = formatDate(item.createDate);
-              });
-              table.tableData.forEach(item => {
-                let CateId = item.categoryId;
-                let CateType = addDialog.type_key.filter(
-                  item => item.id == CateId
-                );
-                table.tableData.map(item => {
-                  item.categoryId = CateType[0].category_name;
-                });
-              });
-              table.loading = false;
+              // if(resData.data.data.length < page.pageSize ) {
+              //   totalpage.value = resData.data.data.length
+              // } else {
+
+              // }
+              totalpage.value = resData.data.total;
+              tableData.data = resData.data.data;
+              loading.value = false;
             }
           })
           .catch(err => {
-            table.loading = false;
+            loading.value = false;
           });
       }, 500);
     };
-
+    //编辑详情
+    const handleEditDetail = (index, row) => {
+      root.$store.commit("Info/InfoDetail",row)
+      root.$router.push({
+        name: "InfoDetail",
+        params: {
+          id: row.id,
+          row: row
+        }
+      })
+    }
     return {
-      //reactive
-      table,
+      //ref
       data,
-      pagination,
-      addDialog,
+      loading,
+      page_size,
+      totalpage,
+      AddNewVisible,
+      formLabelWidth,
+      sendsign,
+      //reactive
+      tableData,
+      categoryid,
+      
       form,
-      //form
-      handleChangeDate,
+      type_key,
+      //methods
       search,
-      //cascade
-      getmodelkey,
-      //select
-      getselectvalue,
-      //addDialog
+      toDate,
+      toType,
       AddNewInfo,
-      handleEdit,
-      //table,
-      selectionchange,
+      handleChangeDate,
+      handleSelectionChange,
+      handleCurrentChange,
+      handleSizeChange,
       handleEditDetail,
+      handleEdit,
       handleDelete,
-      //pagination
-      getpagenumber,
-      getpagesize,
-      //通用
+      deleteALL,
       GetInfoList,
-      confirmDelete
+      getmodelkey,
+      getselectvalue
     };
   }
 };
 </script>
 
 <style>
-body .el-table th.gutter {
-  display: table-cell !important;
+body .el-table th.gutter{
+    display: table-cell!important;
 }
 .el-row .el-form-item {
   display: flex;

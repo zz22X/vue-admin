@@ -5,7 +5,7 @@
         <LayoutNav />
       </el-aside>
       <el-container>
-        <el-header style="height: 75px;position: sticky;top: 0;z-index: 999;">
+        <el-header style="height: 75px;position: sticky;top: 0;z-index: 99;">
           <LayoutHeader />
         </el-header>
         <el-main>
