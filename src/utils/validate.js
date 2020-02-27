@@ -25,3 +25,14 @@ export function validateVerify(value) {
   let reg = /^[a-z0-9]{6}$/;
   return !reg.test(value) ? true: false
 }
+/* 验证手机号 */
+export function validatePhone(value) {
+  let reg = /^[0-9]{11}$/;
+  return !reg.test(value) ? true: false
+}
+
+/* 验证姓名 */
+export function validateName(value) {
+  let reg = /^[\u4E00-\u9FA5\uf900-\ufa2d·s]{2,20}$/;
+  return !reg.test(value) ? true: false
+}

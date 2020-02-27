@@ -14,6 +14,7 @@
   </el-row>
 </template>
 <script>
+import { global } from "@/utils/global";
 import Pagination from "@c/Pagination/index";
 import { reactive, watch, onMounted } from "@vue/composition-api";
 export default {
@@ -36,14 +37,15 @@ export default {
     Pagination
   },
   setup(props, { emit, root }) {
+    //global
+    const { MsgBox } = global();
     const data = reactive({
       deleteId: [],
       deleteAllData: [],
       pagesize: null,
       pagenumber: null
     });
-    onMounted(() => {
-    });
+    onMounted(() => {});
     watch(() => {
       data.deleteId = props.deleteId;
       data.deleteAllData = props.deleteAllData;
@@ -55,16 +57,31 @@ export default {
           type: "warning"
         });
         return false;
+      } else {
+        MsgBox({
+          content: "您是否要删除所选内容？",
+          fn: deleteUserInfo,
+          catchFn: () => {
+            data.deleteid = [];
+            root.$message({
+              message: "已取消删除",
+              type: "success"
+            });
+          }
+        });
       }
     };
+    const deleteUserInfo = () => {
+      emit("confirmdelete")
+    }
     const getpagesize = val => {
-      data.pagesize = val
-      emit("getpagesize",data.pagesize)
+      data.pagesize = val;
+      emit("getpagesize", data.pagesize);
     };
     const GetInfoList = () => {};
     const getpagenumber = val => {
-      data.pagenumber = val
-      emit("getpagenumber",data.pagenumber)
+      data.pagenumber = val;
+      emit("getpagenumber", data.pagenumber);
     };
 
     return {

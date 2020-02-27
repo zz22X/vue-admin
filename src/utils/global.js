@@ -2,11 +2,6 @@ import {
   MessageBox
 } from 'element-ui';
 import {
-  Message
-} from 'element-ui';
-import {
-  reactive,
-  onMounted,
   ref
 } from "@vue/composition-api";
 export function global() {

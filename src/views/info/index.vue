@@ -5,7 +5,8 @@
       <el-row>
         <el-col :span="3">
           <el-form-item label="分类" class="item_type">
-            <Cascader :modelCascader="data.cascaderOption" @sendmodelkey="getmodelkey" />
+          <!--级联菜单 -->
+            <CascaderCmp :category="form.category" @getmodelkey="getmodelkey" />
           </el-form-item>
         </el-col>
         <el-col :span="8">
@@ -27,6 +28,7 @@
         </el-col>
         <el-col :span="3">
           <el-form-item label="关键字" class="item_keyword">
+          <!--下拉菜单 -->
             <Select :selsct="data.selsctOption" @sendselectvalue="getselectvalue" />
           </el-form-item>
         </el-col>
@@ -49,10 +51,10 @@
     <!--表格内容 -->
     <TableCmp
       :tableData="table.tableData"
-      @selectionchange="selectionchange"
       :loading="table.loading"
       @handleedit="handleEdit"
       @handleeditdetail="handleEditDetail"
+      @selectionchange="selectionchange"
       @handledelete="handleDelete"
     />
     <!--底部 -->
@@ -68,21 +70,21 @@
 </template>
 
 <script>
-import TableCmp from "./components/table/index";
 import PaginationCmp from "@c/Pagination/pagination";
 import Select from "@c/select/index";
-import Cascader from "@c/cascader/index";
+import TableCmp from "./components/table/index";
+import CascaderCmp from "./components/cascader/index";
 import addDialog from "./components/dialog/info";
 import { global } from "@/utils/global";
 import { formatDate } from "@/utils/common";
 import { common } from "@/api/common";
-import { getInfoList, getCategory, deleteInfo } from "@/api/info";
-import { reactive, onMounted, ref, watch } from "@vue/composition-api";
+import { getInfoList, deleteInfo } from "@/api/info";
+import { reactive, onMounted, watch } from "@vue/composition-api";
 export default {
   name: "",
   components: {
     addDialog,
-    Cascader,
+    CascaderCmp,
     Select,
     PaginationCmp,
     TableCmp
@@ -121,7 +123,7 @@ export default {
       type_key: []
     });
     const form = reactive({
-      category: "",
+      category: [],
       date: "",
       keyword: "",
       input: "",
@@ -178,6 +180,7 @@ export default {
     };
     //cascader ok
     const getmodelkey = val => {
+      console.log(val)
       form.category = val;
     };
     //select ok
@@ -256,7 +259,7 @@ export default {
     //通用 获取信息列表 ok
     const GetInfoList = () => {
       let data = {
-        categoryId: form.category,
+        categoryId: form.category[0],
         startTiem: form.date[0],
         endTime: form.date[1],
         [form.keyword]: form.input,

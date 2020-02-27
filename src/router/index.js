@@ -89,14 +89,35 @@ const routes = [{
     },
     component: Layout,
     children: [{
-      path: "/userList",
-      name: "UserList",
-      hidden: false,
-      meta: {
-        name: "用户列表"
-      },
-      component: () => import("../views/user/index.vue")
-    }]
+        path: "/userList",
+        name: "UserList",
+        hidden: false,
+        meta: {
+          name: "用户列表"
+        },
+        component: () => import("../views/user/index.vue")
+      }
+    ]
+  },
+  {
+    path: "/data",
+    name: "Data",
+    hidden: false,
+    meta: {
+      name: "数据管理",
+      icon: "data"
+    },
+    component: Layout,
+    children: [{
+        path: "/dataList",
+        name: "DataList",
+        hidden: false,
+        meta: {
+          name: "数据报表"
+        },
+        component: () => import("../views/data/index.vue")
+      }
+    ]
   }
 ];
 

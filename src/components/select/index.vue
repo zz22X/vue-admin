@@ -29,7 +29,9 @@ export default {
         { label: "手机号", value: "phone" },
         { label: "邮箱", value: "email" },
         { label: "ID", value: "id" },
-        { label: "标题", value: "title" }
+        { label: "标题", value: "title" },
+        { label: "管理员", value: "管理员" },
+        { label: "用户", value: "用户" }
       ]
     });
 
@@ -60,7 +62,6 @@ export default {
 
     const selsctChange = val => {
       data.selectedVal = val;
-      console.log(data.selectedVal);
       emit("sendselectvalue", data.selectValue);
     };
     return {

@@ -4,7 +4,7 @@
     v-model="data.category"
     :options="data.options"
     @change="cascaderChange"
-    :props="{ expandTrigger: 'hover',value: 'id', label: 'category_name', children: 'children'} "
+    :props="data.props"
   ></el-cascader>
 </template>
 
@@ -16,52 +16,59 @@ export default {
   props: {
     //接收类型为对象 默认为空
     modelCascader: {
+      type: Array,
+      default: () => []
+    },
+    props: {
       type: Object,
       default: () => {}
+    },
+    options: {
+      type: Array,
+      default: () => []
+    },
+    category: {
+      type: Array,
+      default: () => []
     }
   },
   setup(props, { emit }) {
     //common
-    const { getCateTypeAll, TypeAllKey } = common();
+    //const { getCateTypeAll, TypeAllKey } = common();
     //data
     const data = reactive({
       options: [], //下拉选项内容 从getCateTypeAll中获取
-      category: "", //v-model值
-      cascaderVal: []//选中节点变化的值
+      category: [], //v-model值
+      cascaderVal: [], //选中节点变化的值
+      props: {}
     });
     //组件加载完成时生命周期函数
     onMounted(() => {
       //获取分类信息
-      getCateTypeAll();
+      //getCateTypeAll();
       //选项初始化
-      //initOption();
+      initOption();
     });
     //监听
     watch(() => {
-      //1、监听下拉菜单内容
-      data.options = TypeAllKey.data;
-      /**2、监听从父组件传来的默认值 将v-model的值改为传过来的值
-            判断下传来的数组有没有默认值
-            传过来的值格式是["value值"] 
-      */  
-      if (props.modelCascader.init.length !== 0) {
-        data.category = props.modelCascader.init[0];
-      } else {
-        data.category = ""
-        //console.log("参数为空无默认值");
-      }
+      data.category = props.category;
+      data.props = props.props;
+      data.options = props.options;
     });
     //监听选项改变 跟 v-model差不多 用组件@chnange方法
     const cascaderChange = val => {
-      data.cascaderVal = val[0];
+      data.cascaderVal = val;
+      data.category = data.cascaderVal
       emit("sendmodelkey", data.cascaderVal);
     };
     //选项初始胡 无默认值情况
     const initOption = () => {
-      if (props.modelCascader.init.length === 0) {
-        data.category = ""
+      if (props.modelCascader.length === 0) {
+        data.category = [];
         console.log("参数为空无默认值");
         return false;
+      } else {
+        data.category = props.modelCascader[0];
       }
     };
 
@@ -110,4 +117,3 @@ export default {
               data.form.category = val
             }
  -->
-

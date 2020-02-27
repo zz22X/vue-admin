@@ -4,6 +4,7 @@
       <el-row :gutter="0">
         <el-col :span="4">
           <el-form-item label="关键字" class="item_keyword">
+          <!--下拉选项-->
             <Select
               :selsct="data.selsctOption"
               style="width: 138px;"
@@ -16,41 +17,61 @@
           <el-button type="danger" @click="search" style="width: 100px; margin-left: 30px">搜 索</el-button>
         </el-col>
         <el-col :span="11" style="text-align: right;">
-          <el-button type="danger" class="addbtn" @click="AddNewInfo" style="width: 100px;">添加用户</el-button>
+          <el-button type="danger" class="addbtn" @click="AddNewUser" style="width: 100px;">添加用户</el-button>
         </el-col>
       </el-row>
     </el-form>
+    <!--编辑用户模块 -->
+    <editDialog
+      :flag.sync="editDialog.AddNewVisible"
+      :editData="data.editData"
+      :sign="editDialog.sign"
+      @GetList="getUserList"
+    />
+    <!--添加用户模块 -->
+    <addDialog :flag.sync="addDialog.AddNewVisible" :sign="addDialog.sign" @GetList="getUserList" />
     <!-- 表格 -->
-    <TableCmp
-      @sendselectionchange="getselectionchange"
-      @handleedit="getedit"
-      @handledelete="getdelete"
-      @switchmethods="getswitchmethods"
-      :userTable="data.userData"
+    <TableVue
+      :tableData="table.tableData"
+      :loading="table.loading"
+      @getedit="getedit"
+      @getdeletemany="getdeletemany"
+      @GetList="getUserList"
+      @confirmdelete="confirmDelete"
     />
     <!-- 分页 -->
     <PaginationCmp
-      :totalPage="data.userData.length"
-      :deleteAllData="data.deleteAllData"
+      :totalPage="pagination.totalpage"
       :deleteId="data.deleteId"
+      @getpagesize="getpagesize"
+      @getpagenumber="getpagenumber"
+      @Getinfolist="getUserList"
+      @confirmdelete="confirmDelete"
     />
   </div>
 </template>
 
 <script>
+import { GetUserInfo, DeleteUserInfo, SearchUserInfo } from "@/api/user";
+import editDialog from "./components/dialog/edit";
+import addDialog from "./components/dialog/add";
 import PaginationCmp from "./components/pagination";
-import TableCmp from "./components/table";
+import TableVue from "./components/table/inde";
 import Select from "@c/select/index";
-import { reactive } from "@vue/composition-api";
+import { reactive, onMounted } from "@vue/composition-api";
 export default {
   name: "",
   components: {
     Select,
-    TableCmp,
-    PaginationCmp
+    TableVue,
+    PaginationCmp,
+    editDialog,
+    addDialog
   },
-  setup(props) {
+  setup(props, { root, emit }) {
     const data = reactive({
+      area: "",
+      DATA: [],
       form: {
         input: "",
         keyword: ""
@@ -58,133 +79,153 @@ export default {
       selsctOption: {
         init: ["name", "phone", "email"]
       },
-      userData: [
-        {
-          email: "101255852@163.com",
-          name: "zzx",
-          phone: "111111111111",
-          area: "福州",
-          role: "管理员",
-          status: ""
-        },
-        {
-          email: "15960019793@163.com",
-          name: "zzx",
-          phone: "111111111",
-          area: "福州",
-          role: "管理员",
-          status: ""
-        },{
-          email: "1012552@163.com",
-          name: "zzx",
-          phone: "111111111111",
-          area: "福州",
-          role: "管理员",
-          status: ""
-        },{
-          email: "101852@163.com",
-          name: "zzx",
-          phone: "111111111111",
-          area: "福州",
-          role: "管员",
-          status: ""
-        },{
-          email: "1012852@163.com",
-          name: "zzx",
-          phone: "111111111111",
-          area: "福州",
-          role: "管理员",
-          status: ""
-        },{
-          email: "101255852@163.com",
-          name: "z",
-          phone: "111111111111",
-          area: "福州",
-          role: "管员",
-          status: ""
-        },{
-          email: "1012@163.com",
-          name: "zzx",
-          phone: "111111111111",
-          area: "福州",
-          role: "管理员",
-          status: ""
-        },{
-          email: "1015852@163.com",
-          name: "zzx",
-          phone: "111111111111",
-          area: "福州",
-          role: "管理员",
-          status: ""
-        },{
-          email: "10s5852@163.com",
-          name: "zzx",
-          phone: "111111111111",
-          area: "福州",
-          role: "管理员",
-          status: ""
-        },{
-          email: "1012w852@163.com",
-          name: "zzx",
-          phone: "111111111111",
-          area: "福州",
-          role: "管理员",
-          status: ""
-        },{
-          email: "1q55852@163.com",
-          name: "zzx",
-          phone: "111111111111",
-          area: "福州",
-          role: "管理员",
-          status: ""
-        },{
-          email: "10852@163.com",
-          name: "zzx",
-          phone: "111111111111",
-          area: "福州",
-          role: "管理员",
-          status: ""
-        },
-      ],
       deleteAllData: [],
-      deleteId: []
+      deleteId: [],
+      editData: {}
     });
-    const getselectvalue = val => {
-      form.keyword = val;
-    };
-    const search = () => {};
-    const AddNewInfo = () => {};
+    const pagination = reactive({
+      pageNumber: 1,
+      pageSize: 5,
+      totalpage: 0
+    });
+    const table = reactive({
+      loading: false,
+      tableData: [],
+      deleteid: []
+    });
+    const editDialog = reactive({
+      AddNewVisible: false,
+      sign: {
+        value: "编辑用户"
+      }
+    });
+    const addDialog = reactive({
+      AddNewVisible: false,
+      sign: {
+        value: "添加用户"
+      }
+    });
 
-    //选项变化
-    const getselectionchange = (val) => {
-      let id = val.map(item => item.email);
-      data.deleteId = id
+    onMounted(() => {
+      getUserList();
+      changeData();
+    });
+
+    //form表单  搜索 添加用户 下拉选项
+    const search = () => {
+      let formatsearch = {};
+      if (data.form.keyword) {
+        formatsearch.keyword = data.form.keyword;
+      }
+      if (data.form.input) {
+        formatsearch[data.form.keyword] = data.form.input;
+      }
+      table.loading = true;
+      SearchUserInfo(formatsearch)
+        .then(res => {
+          setTimeout(() => {
+            if (res.data.status === 0) {
+              pagination.totalpage = res.data.total;
+              table.tableData = res.data.data;
+              table.loading = false;
+              changeData();
+            }
+          }, 500);
+        })
+        .catch(err => {
+          console.log(err);
+        });
     };
-    //编辑按钮
+    const AddNewUser = () => {
+      addDialog.AddNewVisible = true;
+    };
+    const getselectvalue = val => {
+      data.form.keyword = val;
+      console.log(data.form.keyword);
+    };
+    //表格 获取删除id数组 编辑显示 ok
+    const getdeletemany = val => {
+      data.deleteId = val;
+    };
     const getedit = val => {
-      console.log(val);
+      data.editData = val;
+      editDialog.AddNewVisible = true;
     };
-    //删除按钮
-    const getdelete = val => {
-      console.log(val);
+    //pagination 获取分页信息 ok
+    const getpagenumber = val => {
+      pagination.pageNumber = val;
+      getUserList();
+      console.log(pagination.pageNumber);
+      console.log(pagination.pageSize);
     };
-    //开关按钮
-    const getswitchmethods = val => {
-      let status = val.switchModel;
-      console.log(val.switchModel);
-      data.userData.forEach(item => {
-        console.log(item);
+    const getpagesize = val => {
+      pagination.pageSize = val;
+      getUserList();
+      console.log(pagination.pageSize);
+      console.log(pagination.pageNumber);
+    };
+
+    //通用 确认删除 ok
+    const confirmDelete = () => {
+      let resdata = {
+        email: data.deleteId
+      };
+      DeleteUserInfo(resdata)
+        .then(res => {
+          if (res.data.status === 0) {
+            root.$message({
+              message: "删除成功",
+              type: "success"
+            });
+            getUserList();
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    };
+    //通用 获取信息列表 ok
+    const getUserList = () => {
+      let resdata = {
+        pageSize: pagination.pageSize,
+        pageNumber: pagination.pageNumber
+      };
+      table.loading = true;
+      setTimeout(() => {
+        GetUserInfo(resdata)
+          .then(res => {
+            let resData = res.data;
+            if (resData.status === 0) {
+              pagination.totalpage = 12;
+              table.tableData = resData.data;
+
+              table.loading = false;
+              changeData();
+            }
+          })
+          .catch(err => {
+            table.loading = false;
+          });
+      }, 500);
+    };
+    //通用 格式化地区
+    const changeData = () => {
+      data.DATA = table.tableData;
+      data.DATA.forEach(item => {
+        item.newarea = item.area[0] + "/" + item.area[1] + "/" + item.area[2];
       });
     };
+
     return {
-      data,
-      search,
-      AddNewInfo,
-      getselectvalue,
-      getselectionchange,
-      getedit,
-      getdelete,
-      getswitchmethods
+      data, table, pagination, addDialog, editDialog,
+      //form
+      search, AddNewUser, getselectvalue,
+      //表格
+      getdeletemany, getedit,
+      //页码
+      getpagenumber, getpagesize,
+      //通用
+      getUserList, confirmDelete
     };
   }
 };

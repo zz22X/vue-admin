@@ -3,6 +3,9 @@ import {
   getCategoryall
 } from "@/api/info";
 import {
+  GetCity
+} from "@/api/user";
+import {
   reactive
 } from "@vue/composition-api"
 export function common() {
@@ -12,7 +15,7 @@ export function common() {
   const TypeAllKey = reactive({
     data: []
   });
-  const ChildrenKey = reactive({
+  const cityData = reactive({
     data: []
   });
   /**
@@ -34,10 +37,19 @@ export function common() {
 
     })
   }
+  //获取省市区
+  const getCity = () => {
+    GetCity().then(res => {
+      cityData.data = res.data.data[0].provinceList
+    }).catch(err => {})
+  }
+
   return {
     TypeKey,
     getCateType,
     getCateTypeAll,
-    TypeAllKey
+    TypeAllKey,
+    getCity,
+    cityData
   }
 }

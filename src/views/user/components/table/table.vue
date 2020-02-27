@@ -14,16 +14,20 @@
 <script>
 import Table from "@c/table/index";
 //3.0
-import { reactive, watch } from "@vue/composition-api";
+import { reactive, watch,onMounted } from "@vue/composition-api";
 export default {
   name: "TableCmp",
   components: {
     Table
   },
   props: {
-    userTable: {
+    tableData: {
       type: Array,
       default: () => []
+    },
+    loading: {
+      type: Boolean,
+      default: false
     }
   },
   setup(props, { emit }) {
@@ -31,16 +35,17 @@ export default {
       tableData: [],
       loading: false,
       formatter:"",
+      area:"",
     });
     const table = reactive({
       tableColumn: [
         { param: "email", label: "邮箱/用户名" },
         { param: "name", label: "姓名", width: "150" },
         { param: "phone", label: "手机号", width: "200" },
-        { param: "area", label: "地区", width: "200" },
+        { param: "newarea", label: "地区", width: "200" },
         { param: "role", label: "角色", width: "150" },
         {
-          param: "switchModel",
+          param: "isAdmin",
           label: "禁启用状态",
           width: "110",
           activecol: "#13ce66",
@@ -65,8 +70,15 @@ export default {
       }
     });
     watch(() => {
-      data.tableData = props.userTable;
+
+      data.tableData = props.tableData;
+      
+      data.loading = props.loading;
     });
+    onMounted(() => {
+      //data.tableData.map(item =>item.area = item.area[0] + '/' +item.area[1] + '/' +item.area[2])
+      
+    })
     const handleselectionchange = val => {
       let selectionchange = val;
       emit("sendselectionchange", selectionchange);

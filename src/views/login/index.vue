@@ -80,12 +80,7 @@
 import sha1 from "js-sha1";
 import { reactive, ref, onMounted } from "@vue/composition-api";
 import { GetSms, GetRegister } from "@/api/login";
-import {
-  stripscript,
-  validateEmil,
-  validatePass,
-  validateVerify
-} from "@/utils/validate";
+import { stripscript, validateEmil, validatePass, validateVerify } from "@/utils/validate"
 export default {
   name: "login",
   //放data数据、生命周期、自定义函数

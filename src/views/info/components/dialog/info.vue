@@ -10,7 +10,7 @@
     >
       <el-form :model="data.form" ref="dataForm">
         <el-form-item label="类型" class="add_type" prop="category">
-          <Cascader :modelCascader="data.cascaderOption" @sendmodelkey="getmodelkey" />
+          <CascaderCmp :modelCascader="data.cascaderOption" @getmodelkey="getmodelkey" :category="data.form.category"/>
         </el-form-item>
         <el-form-item label="标题" class="add_title" prop="title">
           <el-input
@@ -46,14 +46,15 @@
 </template>
 
 <script>
-import Cascader from "@c/cascader/index";
+
+import CascaderCmp from "../cascader/index";
 import { addInfoList, editInfoList } from "@/api/info";
 import { global } from "@/utils/global";
 import { reactive, watch, ref } from "@vue/composition-api";
 export default {
   name: "addDialog",
   components: {
-    Cascader
+    CascaderCmp
   },
   props: {
     flag: {
@@ -81,14 +82,13 @@ export default {
         hidden: null
       },
       form: {
-        category: "",
+        category: [],
         title: "",
         content: ""
       },
       type_key: [],
-      cascaderOption: {
-        init: []
-      }
+      cascaderOption: [],
+      showcate:[]
     });
     //watch监听
     watch(() => {
@@ -109,17 +109,18 @@ export default {
     const close = () => {    
       data.form.title = "";
       data.form.content = "";
-      data.cascaderOption.init = [];
+      data.cascaderOption = [];
       data.AddNewVisible = false;
       emit("update:flag", false);
     };
     //打开时
     const open = () => {
       if (data.sign.value == "编辑") {
-        data.form.category = props.sign.data.categoryId;
+        data.form.category = [props.sign.data.categoryId];
         data.form.title = props.sign.data.title;
         data.form.content = props.sign.data.content;
-        data.cascaderOption.init.push(data.form.category);
+        data.cascaderOption.push(props.sign.data.categoryId);
+        console.log(data.cascaderOption)
       } 
     };
     //打开动画结束后
