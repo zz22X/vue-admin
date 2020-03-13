@@ -9,7 +9,7 @@
     @selection-change="handleSelectionChange"
   >
     <!-- 下拉选择框-->
-    <el-table-column :type="selectionType" width="55" align="center" v-if="selectionType"></el-table-column>
+    <el-table-column :type="selectionType" width="55" align="center" v-if="selectionType" />
     <!-- 文本框-->
     <el-table-column
       v-for="(item, index) in tableColumn"
@@ -35,7 +35,7 @@
           ></el-switch>
         </span>
         <span v-else>{{scope.row[item.param]}}</span>
-      </template>
+      </template> 
     </el-table-column>
     <!-- 按钮区-->
     <el-table-column

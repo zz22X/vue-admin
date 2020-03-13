@@ -67,18 +67,28 @@ export default {
           { type: "success", label: "编辑", methods: "handleEdit" },
           { type: "danger", label: "删除", methods: "handleDelete" }
         ]
+      },
+      requestData: {
+        url: "",
+        method: "post",
+        data: data
       }
     });
     watch(() => {
-
       data.tableData = props.tableData;
-      
       data.loading = props.loading;
     });
     onMounted(() => {
-      //data.tableData.map(item =>item.area = item.area[0] + '/' +item.area[1] + '/' +item.area[2])
-      
+      //data.tableData.map(item =>item.area = item.area[0] + '/' +item.area[1] + '/' +item.area[2]) 
     })
+    let loadDat = () => {
+      let requestJson = table.requestData
+      let requestData = {
+        url: requestUrl[requestJson.url],
+        method: requestJson.method,
+        data: requestJson.data
+      }
+    }
     const handleselectionchange = val => {
       let selectionchange = val;
       emit("sendselectionchange", selectionchange);

@@ -53,6 +53,7 @@ export default {
     const getmodelkey = val => {
       data.cascaderVal = val
       emit("getmodelkey", data.cascaderVal); //默认值传出去
+      console.log(data.cascaderVal)
     };
 
     return {

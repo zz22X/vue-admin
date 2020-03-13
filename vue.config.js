@@ -45,7 +45,7 @@ module.exports = {
         prependData: `@import "./src/styles/base.css";`
       }
     },
-    // 启用 CSS modules for all css / pre-processor files.
+    // 启用 CSS requireModuleExtensiony for all css / pre-processor files.
     modules: false
   },
   // use thread-loader for babel & TS in production build

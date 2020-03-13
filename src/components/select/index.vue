@@ -1,5 +1,5 @@
 <template>
-  <el-select v-model="data.selectValue" placeholder="请选择" class="keyword" @change="selsctChange">
+  <el-select v-model="data" placeholder="请选择" class="keyword" @change="selsctChange">
     <el-option
       v-for="item in data.initOption"
       :key="item.value"

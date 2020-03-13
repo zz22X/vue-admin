@@ -43,3 +43,12 @@ export function SearchUserInfo(data) {
     data
   })
 }
+
+
+export function loadTableData(params) {
+  return req.request({
+    method: params.method || "post",
+    url: params.url,
+    data: params.data || {}
+  })
+}

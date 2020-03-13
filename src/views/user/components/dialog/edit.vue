@@ -13,7 +13,7 @@
         ref="dataForm"
         :rules="data.rules"
         label-position="right"
-        label-width="150px"
+        label-width="100px"
         style="margin-left: 50px;"
       >
         <el-form-item label="邮箱/用户名" prop="email">

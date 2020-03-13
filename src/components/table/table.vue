@@ -70,7 +70,8 @@ export default {
           { type: "success", label: "编辑", methods: "handleEdit" },
           { type: "danger", label: "删除", methods: "handleDelete" }
         ]
-      }
+      },
+      requsetUrl: ""
     });
 
     watch(() => {
